@@ -9,6 +9,8 @@ import fileinput
 import argparse
 import sys
 
+#--Launch Arguments---
+
 parser = argparse.ArgumentParser(
     description="May take a file to read each line for calibration numbers."
 )
@@ -23,22 +25,31 @@ print("Input file:", args.file)
 
 #--File section--
 
-#TODO: start reading the file line by line and use another function to start adding values to a final total
-def get_file():
+def get_file(given_filepath):
+    """
+    Opens a file given in user argument when program runs and calculates the calibration number.
+    
+    Args: 
+        given_filepath: filepath given by the user through args.file.
+    Returns:
+        total_num: all two digit numbers per line in the file added together.
+    """
     total_num = 0
     
     try:
-        file = open(args.file, 'r')
+        file = open(given_filepath, 'r')
         for line in file:
             total_num += calculate_num(line)
         
         print("Calibration value is:", total_num)
         file.close()
+        return total_num
     except FileNotFoundError:
         print("File not found error. Please check the filepath again")
-        sys.exit(1) #Exit with code 1 to indicate error
+        raise
         
 #--Functions--
+
 def calculate_num(line):
     """
     Takes a line and calculates a two digit number from first and last digits and returns it.
@@ -49,7 +60,6 @@ def calculate_num(line):
     Returns:
         line_value: The two digit number formed from first and last digits found in the line.
     """
-    #TODO: Take a string and return a two digit number from the first and last digit found. 
     first_num = 0
     last_num = 0
     num_list = []
@@ -58,6 +68,9 @@ def calculate_num(line):
         if(char.isdigit()):
             num_list.append(char)
     
+    if(len(num_list) < 2):
+        raise IndexError("There is less than two numbers in the following line. Please fix or use a new line.", line)
+    
     first_num = num_list[0]
     last_num = num_list[-1] #-1 goes backwards from the starting value so it will be the last element in the list
     
@@ -65,14 +78,16 @@ def calculate_num(line):
     line_value = str(first_num) + str(last_num)
     return int(line_value)
 
+#--Main Code--
+
+total_num = 0 #Total count for the calibration value
+
+#Uses user given file if in argument else prompts user for a line to get digit from
 if args.file is not None:
-    get_file()
+    total_num = get_file(args.file)
+    print("Calibration value from file is:", total_num)
 else:
     user_line = input("Please enter a string with at least two numbers contained anywhere in it.\n")
-    total_num = 0
     total_num = calculate_num(user_line)
     
     print("Calibration value is:", total_num)
-    
-#--Error checking section--
-    #TODO: extra section added for practicing error handling. What if there's only one digit? No digits? No lines in file? etc.
