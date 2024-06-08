@@ -14,7 +14,6 @@ class TestCubeGameVerify(unittest.TestCase):
     #TESTING
     #TODO: test file inputs, combining colors, random games, error checking
     
-    
     #teardown
     def tearDown(self):
         os.remove("cubeTesting.txt")
